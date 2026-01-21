@@ -5,9 +5,10 @@ ENV GOARCH=amd64 \
     GOPROXY=https://goproxy.cn,direct
 
 WORKDIR /go/src
-RUN apk add --no-cache curl tar
-RUN curl -L "https://github.com/ar0c/goc/releases/download/v2.1.4/goc-v2.1.4-linux-amd64.tar.gz" | tar -xz -C /usr/local/bin/
-
+RUN apk add --no-cache curl tar git
+RUN TAG=$(curl -s https://api.github.com/repos/ar0c/goc/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/') && \
+    curl -L "https://github.com/ar0c/goc/releases/download/${TAG}/goc-${TAG}-linux-amd64.tar.gz" | tar -xz -C /usr/local/bin/
+RUN goc version
 COPY go.mod go.sum ./
 RUN go mod download
 
